@@ -6,7 +6,7 @@ volumes:
 
 services:
   postgres:
-    build: ./compose/postgres
+    build: ./config/docker/postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - postgres_backup:/backups
@@ -15,7 +15,7 @@ services:
   django:
     build:
       context: .
-      dockerfile: ./compose/django/Dockerfile
+      dockerfile: ./config/docker/django/Dockerfile
     user: django
     depends_on:
       - postgres
@@ -24,7 +24,7 @@ services:
     env_file: .env
 
   nginx:
-    build: ./compose/nginx
+    build: ./config/docker/nginx
     depends_on:
       - django
 {% if cookiecutter.use_lets_encrypt == 'y' %}
@@ -62,7 +62,7 @@ services:
   celeryworker:
     build:
       context: .
-      dockerfile: ./compose/django/Dockerfile
+      dockerfile: ./config/docker/django/Dockerfile
     user: django
     env_file: .env
     depends_on:
@@ -73,7 +73,7 @@ services:
   celerybeat:
     build:
       context: .
-      dockerfile: ./compose/django/Dockerfile
+      dockerfile: ./config/docker/django/Dockerfile
     user: django
     env_file: .env
     depends_on:

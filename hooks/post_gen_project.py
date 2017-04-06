@@ -202,6 +202,15 @@ def remove_elasticbeanstalk():
             PROJECT_DIRECTORY, filename
         ))
 
+def run_edgy_project_update():
+    from edgy.project.__main__ import handle_update
+    projectfile = os.path.join(PROJECT_DIRECTORY, 'Projectfile')
+    handle_update(projectfile)
+    os.system('yapf -i '+projectfile)
+    os.system('yapf -rip '+os.path.join(PROJECT_DIRECTORY, '{{ cookiecutter.project_slug }}'))
+    os.system('git add .')
+    os.system('git ci -m "Code generated with cookiecutter and first edgy-project update execution."')
+
 # IN PROGRESS
 # def copy_doc_files(project_directory):
 #     cookiecutters_dir = DEFAULT_CONFIG['cookiecutters_dir']
@@ -284,3 +293,7 @@ if '{{ cookiecutter.open_source_license}}' != 'GPLv3':
 # 12. Remove Elastic Beanstalk files
 if '{{ cookiecutter.use_elasticbeanstalk_experimental }}'.lower() != 'y':
     remove_elasticbeanstalk()
+
+# 13. Run edgy-project generator
+run_edgy_project_update()
+
