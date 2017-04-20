@@ -16,7 +16,7 @@ mv $SANDBOX_PATH/.git $SANDBOX_PATH2
 rm -rf $SANDBOX_PATH
 mv $SANDBOX_PATH2 $SANDBOX_PATH
 
-cookiecutter . --no-input --overwrite-if-exists project_name=Sandbox description='A django sandbox' use_celery=y
+cookiecutter . --no-input --overwrite-if-exists project_name=Sandbox description='A django sandbox' use_celery=y docker_namespace=registry.gitlab.com/rdorgueil
 
 (cp -a addons/sandbox/. $SANDBOX_PATH)
 (cd $SANDBOX_PATH; git add .; git ci -m "auto update with generated code."; git push origin master)

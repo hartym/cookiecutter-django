@@ -130,15 +130,12 @@ def on_make_generate_docker_targets(event):
         Build directory is a local clean clone of the repository used to generate docker images from a sane codebase.
     ''')
 
-    event.makefile['DOCKER_REGISTRY'] = ''
-    event.makefile['DOCKER_USER'] = ''
-    event.makefile['DOCKER_NAME'] = '{{cookiecutter.project_slug}}'
-    event.makefile['DOCKER_IMAGE'] = '$(DOCKER_USER)/$(DOCKER_NAME)'
-    event.makefile['DOCKER'] = 'docker'
-    event.makefile['DOCKER_PUSH'] = 'docker push'
+    event.makefile['DOCKER'] = '$(shell which docker)'
+    event.makefile['DOCKER_PUSH'] = '$(DOCKER) push'
+    event.makefile['DOCKER_IMAGE'] = '{{ [cookiecutter.docker_namespace, cookiecutter.project_slug] }}'
 
     event.makefile.add_target('build', '''
-        $(DOCKER) build -t $(DEPSUM)$(VARIANT) -f config/docker/django/deps/Dockerfile$(VARIANT) .
+        $(DOCKER) build -t $(DOCKER_IMAGE)-deps:$(DEPSUM)$(VARIANT) -f config/docker/django/deps/Dockerfile$(VARIANT) .
     ''', phony=True)
 
     event.makefile.add_target('run', '''

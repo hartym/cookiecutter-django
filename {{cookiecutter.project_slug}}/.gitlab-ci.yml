@@ -5,21 +5,31 @@ services:
 
 variables:
   DOCKER_DRIVER: overlay
+  STAGING_REGISTRY: "registry.gitlab.com/rdorgueil"
+  CONTAINER_TEST_IMAGE: ${STAGING_REGISTRY}/${CI_PROJECT_NAME}:${CI_BUILD_REF_NAME}_${CI_BUILD_REF}_test
+  #CONTAINER_RELEASE_IMAGE: ${STAGING_REGISTRY}/${CI_PROJECT_NAME}:${CI_BUILD_REF_NAME}_${CI_BUILD_REF}
 
 stages:
-  - install
   - build
+  - test
   - deploy
 
-install:
-  image: quay.io/okdocker/pynode:3.6-6.x
-  stage: install
-  script: "make install"
 
 build:
-  image: quay.io/okdocker/pynode:3.6-6.x
   stage: build
-  script: "make build"
+  script:
+    - docker info
+    - apk update
+    - apk upgrade
+    - apk add python python-dev py-pip build-base
+    - make build
+    - docker build -t registry.gitlab.com/rdorgueil/django-sandbox/image .
+    - docker push registry.gitlab.com/rdorgueil/django-sandbox/image
+
+test:
+  stage: test
+  script:
+    - docker run --link=postgres:postgres $CONTAINER_TEST_IMAGE nosetests --with-coverage --cover-erase --cover-package=${CI_PROJECT_NAME} --cover-html
 
 deploy:
   image: google/cloud-sdk
