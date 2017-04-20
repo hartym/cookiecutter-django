@@ -33,7 +33,8 @@ project_slug
 my_test_project/*
 
 # Generated when running py.test for the Cookiecutter Django generation tests
-.cache/
+/.cache
+/sandbox
 
 # Generated when running celery beat
 celerybeat-schedule.db
@@ -41,4 +42,3 @@ celerybeat-schedule.db
 # Unit test / coverage reports
 .coverage
 .tox
-.cache

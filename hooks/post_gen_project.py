@@ -159,15 +159,6 @@ def remove_gulp_files():
             PROJECT_DIRECTORY, filename
         ))
 
-def remove_packageJSON_file():
-    """
-    Removes files needed for grunt if it isn't going to be used
-    """
-    for filename in ["package.json"]:
-        os.remove(os.path.join(
-            PROJECT_DIRECTORY, filename
-        ))
-
 def remove_certbot_files():
     """
     Removes files needed for certbot if it isn't going to be used
@@ -202,6 +193,9 @@ def remove_elasticbeanstalk():
             PROJECT_DIRECTORY, filename
         ))
 
+def run_yarn():
+    os.system('yarn')
+
 def run_edgy_project_update():
     from edgy.project.__main__ import handle_update
     projectfile = os.path.join(PROJECT_DIRECTORY, 'Projectfile')
@@ -209,7 +203,6 @@ def run_edgy_project_update():
     os.system('yapf -i '+projectfile)
     os.system('yapf -rip '+os.path.join(PROJECT_DIRECTORY, '{{ cookiecutter.project_slug }}'))
     os.system('git add .')
-    os.system('git ci -m "Code generated with cookiecutter and first edgy-project update execution."')
 
 # IN PROGRESS
 # def copy_doc_files(project_directory):
@@ -256,7 +249,8 @@ elif '{{ cookiecutter.js_task_runner}}'.lower() == 'grunt':
 else:
     remove_gulp_files()
     remove_grunt_files()
-    remove_packageJSON_file()
+
+run_yarn()
 
 # 7. Removes all certbot/letsencrypt files if it isn't going to be used
 if '{{ cookiecutter.use_lets_encrypt }}'.lower() != 'y':
