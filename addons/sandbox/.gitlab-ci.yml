@@ -1,0 +1,36 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay
+
+stages:
+  - install
+  - build
+  - deploy
+
+install:
+  image: quay.io/okdocker/pynode:3.6-6.x
+  stage: install
+  script: "make install"
+
+build:
+  image: quay.io/okdocker/pynode:3.6-6.x
+  stage: build
+  script: "make build"
+
+deploy:
+  image: google/cloud-sdk
+  stage: deploy
+  script:
+  - echo "$GOOGLE_KEY" > key.json
+  - gcloud auth activate-service-account --key-file key.json
+  - gcloud config set compute/zone europe-west1-c
+  - gcloud config set project actuator-sample
+  - gcloud config set container/use_client_certificate True
+  - gcloud container clusters get-credentials actuator-sample
+  - kubectl delete secret registry.gitlab.com
+  - kubectl create secret docker-registry registry.gitlab.com --docker-server=https://registry.gitlab.com --docker-username=rdorgueil --docker-password=$REGISTRY_PASSWD --docker-email=romain@dorgueil.net
+  - kubectl apply -f deployment.yml
